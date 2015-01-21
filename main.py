@@ -81,5 +81,5 @@ class Rot13(object):
         txt = self.c_cipher(self.text)
         return txt
 
-app = webapp2.WSGIApplication([('/', MainPage)
+app = webapp2.WSGIApplication([('/rot13', MainPage)
                               ], debug=True)
