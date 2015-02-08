@@ -15,8 +15,10 @@
 # limitations under the License.
 #
 import os
+import re
 import jinja2
 import webapp2
+from google.appengine.ext import db
 from cipher.ciph import *
 
 template_dir = os.path.join(os.path.dirname(__file__), 'templates')
@@ -43,5 +45,79 @@ class MainPage(MainHandler):
         text=Rot13(txt)
         return self.render('r.html', value=text.rot13())
 
-app = webapp2.WSGIApplication([('/rot13', MainPage)
+
+class SignupPage(MainHandler):
+    def get(self):
+        return self.render('signup.html')
+
+    def post(self):
+        items = [self.request.get(item) for item in ('username','password','verify','email')] # Get input data from form
+        username,password,verify,email = items
+        usrvalid = not(self.not_valid_user(username))
+        passvalid = not(self.not_valid_user(password))
+        passverified = self.verify_pass(password, verify)
+        emailvalid = not(self.not_valid_email(email))
+        #self.response.out.write({'passverify':{password:passverified},'user':{username:usrvalid},'passvalid':{password:passvalid},'email':{email:emailvalid}})
+
+###     First case all inputs valid
+        if usrvalid and passvalid and passverified and emailvalid:
+            self.acc = UsersAccounts(users_name=username,users_pass=password,users_email=email)#users_name=self.request.get('username'),users_pass=self.request.get('password'),users_email=self.request.get('email'))
+            self.acc.put()
+            self.redirect('/welcome?username=%s'%username)
+            #if len(outcome)>1:
+            #    self.response.out.write('welcome %s' %outcome)#redirect('/welcome')
+            #self.acc.put()
+            #self.redirect('/welcome')
+
+###     Second case not all inputs are valid
+        else:
+            ## Invalid Password and Username
+            if not( usrvalid and passvalid ):
+                return self.render('signup.html', username=username, password=password, error1=1, error2=1)
+
+            ## Either Invalid Password or Username
+            elif not(self.not_valid_user(username)) or not(self.not_valid_user(password)):
+                if not(self.not_valid_user(username)): # Case of invalid username
+                    return self.render('signup.html', error1=1)
+                else:# Case of invalid password
+                    return self.render('signup.html', error2=1)
+
+            ## Password mismatch
+            elif not (password == verify):
+                return self.render('signup.html',verify=verify, error=[passverified,usrvalid,passvalid,emailvalid])
+
+    def not_valid_user(self,username):
+        return not(re.match( r"^[a-zA-Z0-9_-]{3,20}$", username))
+        #if len(username.split())>1:
+         #   return False
+        #return True
+
+    def verify_pass(self, password, verify):
+        if password == '' or verify == '':
+            return False
+        return password == verify
+
+    def not_valid_email(self, email):
+        e_pattern = '^[\S]+@[\S]+\.[\S]+$'
+        ecom = re.compile(e_pattern)
+        return not(re.match(ecom, email))
+
+
+class WelcomePage(SignupPage):
+    def get(self):
+        user = UsersAccounts.all()
+        user.order('-period')
+        return self.render('wel.html',user=user.get().users_name)
+
+
+class UsersAccounts(db.Model):
+    users_name = db.StringProperty(required=True)
+    users_pass = db.StringProperty(required=True)
+    users_email = db.StringProperty(required=False)
+    period = db.DateTimeProperty(auto_now_add=True)
+
+
+app = webapp2.WSGIApplication([('/rot13', MainPage),
+                               ('/signup',SignupPage),
+                               ('/welcome',WelcomePage)
                               ], debug=True)
