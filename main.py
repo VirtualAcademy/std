@@ -71,26 +71,44 @@ class SignupPage(MainHandler):
 
 ###     Second case not all inputs are valid
         else:
+            error1=None
+            error2=None
+            mail=None
+            verified=None
+            if not(emailvalid):
+                mail=1
+            if not (passvalid):
+                error2 = 1
+            if not (usrvalid):
+                error1=1
+            if not (passverified):
+                verified=1
+
+            return self.render('signup.html', username=username, password=password, error1=1, error2=1)
             ## Invalid Password and Username
-            if not( usrvalid and passvalid ):
-                return self.render('signup.html', username=username, password=password, error1=1, error2=1)
+           # if not( usrvalid and passvalid ):
+            #    return self.render('signup.html', username=username, password=password, error1=1, error2=1)
 
             ## Either Invalid Password or Username
-            elif not(self.not_valid_user(username)) or not(self.not_valid_user(password)):
-                if not(self.not_valid_user(username)): # Case of invalid username
-                    return self.render('signup.html', error1=1)
-                else:# Case of invalid password
-                    return self.render('signup.html', error2=1)
+            #elif not(self.not_valid_user(username)) or not(self.not_valid_pass(password)):
+             #   if not(self.not_valid_user(username)): # Case of invalid username
+              #      return self.render('signup.html', error1=1)
+               # else:# Case of invalid password
+                #    return self.render('signup.html', error2=1)
 
             ## Password mismatch
-            elif not (password == verify):
-                return self.render('signup.html',verify=verify, error=[passverified,usrvalid,passvalid,emailvalid])
+            #elif not (password == verify):
+             #   return self.render('signup.html',verify=verify, error=[passverified,usrvalid,passvalid,emailvalid])
 
     def not_valid_user(self,username):
         return not(re.match( r"^[a-zA-Z0-9_-]{3,20}$", username))
         #if len(username.split())>1:
          #   return False
         #return True
+
+    def not_valid_pass(self,passw):
+        return not(re.match( r"^.{3,20}$", passw))
+        #if len(username.split())>1:
 
     def verify_pass(self, password, verify):
         if password == '' or verify == '':

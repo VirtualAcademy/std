@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Signup Page</title>
+    </head>
+    <body>
+        <div id="search">
+        <form Method="POST" action="/signup">
+            <style type="text/css"> h{color: red;}
+            </style>
+        <h1>Signup</h1>
+        <br>
+            {{error}}
+        <label>Username
+        <input name='username' type="text" value={{username}}>
+            {% if error1 %}
+            <h>That's not a valid username.</h>
+            {% endif %}
+        </label>
+        <br>
+        <br>
+        <label>Password
+        <input name='password' type="password">
+            {% if error2 %}
+            <h>That's not a valid password.</h>
+            {% endif %}
+        </label>
+        <br>
+        <br>
+        <label>Verify Password
+        <input name='verify' type="password">
+            {% if verified %}
+            <h>Your passwords didn't match.</h>
+            {% endif %}
+        </label>
+        <br>
+        <br>
+        <label>Email (optional)
+        <input name='email' type="email">
+            {% if mail %}
+            <h>That's not a valid a email.</h>
+            {% endif %}
+        </label>
+        <br>
+        <br>
+        <style>
+            button
+            {
+            background-image: -moz-linear-gradient(center top,#faf,#555);
+            padding: 1px
+            border: 10px solid #aaa;
+            -moz-border-radius: 5px;
+            height: 30px;
+            width: 100px;
+            color: white;
+            }
+        </style> 
+        <button type="Submit">SUBMIT</button>            
+        </form>
+        </div>
+        <style>
+            #search{
+                 border: 1px solid #ccc;
+                 max-width: -moz-fit-content;
+                 padding: 1px;
+                 -moz-border-radius: 5px;
+            }
+            #text{
+                 border: 0px solid #ccc;
+                 -moz-border-radius: 5px 0px 0px 5px;
+                 padding-left: 10px;
+            }
+            #submit{
+                 background: #88f;
+                 color: #fff;
+                 font: 14px arial;
+                 font-weight: bold;
+                 border: 0px solid #000;
+                 padding: 1px 5px;
+                 -moz-border-radius: 0px 5px 5px 0px;
+                 cursor: pointer;
+            }
+            #submit:hover{
+                 background: #55f;
+            }
+            form{
+                 margin: 0px;
+                 padding: 0px;
+            }
+        </style>
+    </body>
+</html> 
