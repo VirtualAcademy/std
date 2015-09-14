@@ -7,4 +7,4 @@ of the same program.
 
 To get a feel of the implementations go to:
 web2py version: http://trvlapp.appspot.com/rot13
-Django version: virtu.pythonanywhere.com/rot13
+Django version: http://virtu.pythonanywhere.com/rot13
